@@ -1,5 +1,5 @@
 val CatsV = "2.10.0"
-val Dc10V = "0.3.0"
+val Dc10ScalaV = "0.5.0"
 val MUnitV = "0.7.29"
 val SourcePosV = "1.1.0"
 val TwiddlesV = "0.7.0"
@@ -30,31 +30,21 @@ inThisBuild(List(
   versionScheme := Some("semver-spec"),
 ))
 
-lazy val scala = (project in file("."))
-  .settings(
-    name := "dc10-scala",
-    libraryDependencies ++= Seq(
-      // main
-      "com.julianpeeters" %% "dc10-core" % Dc10V,
-      "org.tpolecat"      %% "sourcepos" % SourcePosV,
-      "org.typelevel"     %% "cats-core" % CatsV,
-      // test
-      "org.scalameta"     %% "munit"     % MUnitV      % Test
-    )
-  )
-
-lazy val scalaq = (project in file("scalaq"))
+lazy val scalaq = (project in file("."))
   .settings(
     name := "dc10-scalaq",
     libraryDependencies ++= Seq(
+      // main
+      "com.julianpeeters" %% "dc10-scala" % Dc10ScalaV,
       // test
-      "org.scalameta" %% "munit" % MUnitV % Test
+      "org.scalameta"     %% "munit"      % MUnitV      % Test
     )
-  ).dependsOn(scala)
+  )
+
 
 lazy val docs = project.in(file("docs/gitignored"))
   .settings(
-    mdocOut := scala.base,
+    mdocOut := scalaq.base,
     mdocVariables := Map(
       "SCALA" -> crossScalaVersions.value.map(e => e.takeWhile(_ != '.')).mkString(", "),
       "VERSION" -> version.value.takeWhile(_ != '+'),
