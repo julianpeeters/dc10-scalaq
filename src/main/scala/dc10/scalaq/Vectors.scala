@@ -31,7 +31,7 @@ object Vectors:
       
     def Vector[A]: StateT[ErrorF, List[Statement], ValueExpr[VectorN[A], Unit]] =
       for
-        t <- StateT.pure[ErrorF, List[Statement], TypeExpr[VectorN[A], Unit]](TypeExpr(Term.TypeLevel.Var.UserDefinedType(None, "List", None, ())))
+        t <- VECTOR[A]
         v <- StateT.pure(ValueExpr(Term.ValueLevel.Var.UserDefinedValue(None, "List", t.tpe, None)))
       yield v
     
@@ -69,12 +69,6 @@ object Vectors:
           o <- vector1
           v <- vector2
           f <- o.value match
-            case Term.ValueLevel.App.App1(qnt, fun, arg, tpe) => StateT.liftF[ErrorF, List[Statement], ValueExpr[VectorN[A] => VectorN[A], (Int, Z)]](Left(List(Error(s"${sp.file}:${sp.line}\nAppend error"))))
-            case Term.ValueLevel.App.AppCtor1(qnt, tpe, arg) => StateT.liftF[ErrorF, List[Statement], ValueExpr[VectorN[A] => VectorN[A], (Int, Z)]](Left(List(Error(s"${sp.file}:${sp.line}\nAppend error"))))
-            case Term.ValueLevel.App.AppPure(qnt, fun, arg, tpe) => StateT.liftF[ErrorF, List[Statement], ValueExpr[VectorN[A] => VectorN[A], (Int, Z)]](Left(List(Error(s"${sp.file}:${sp.line}\nAppend error"))))
-            case Term.ValueLevel.App.AppVargs(qnt, fun, tpe, vargs*) => StateT.liftF[ErrorF, List[Statement], ValueExpr[VectorN[A] => VectorN[A], (Int, Z)]](Left(List(Error(s"${sp.file}:${sp.line}\nAppend error"))))
-            case Term.ValueLevel.App.Dot1(qnt, fun, arg1, arg2, tpe) => StateT.liftF[ErrorF, List[Statement], ValueExpr[VectorN[A] => VectorN[A], (Int, Z)]](Left(List(Error(s"${sp.file}:${sp.line}\nAppend error"))))
-            case Term.ValueLevel.App.Dotless(qnt, fun, arg1, arg2, tpe) => StateT.liftF[ErrorF, List[Statement], ValueExpr[VectorN[A] => VectorN[A], (Int, Z)]](Left(List(Error(s"${sp.file}:${sp.line}\nAppend error"))))
             case Term.ValueLevel.Var.UserDefinedValue(qnt, nme, tpe, impl) =>
               for
                 i <- StateT.liftF[ErrorF, List[Statement], Seq[Term.ValueLevel[A, Z]]](o.value.findVargs.toRight(List(Error(""))))
@@ -82,15 +76,8 @@ object Vectors:
                 n = i.appendedAll(w)
                 g <- vector2 ==> ((s: ValueExpr[VectorN[A], (Int, Z)]) => Vector.of(n.map(e => refV(ValueExpr(e)))*))
                 v <- StateT.pure[ErrorF, List[Statement], ValueExpr[VectorN[A] => VectorN[A], (Int, Z)]](
-                  ValueExpr(Term.ValueLevel.Var.UserDefinedValue(None, "++", g.value.tpe, Some(g.value)))
+                  ValueExpr(Term.ValueLevel.Var.UserDefinedValue(None, "++", g.value.tpe.manageDep(_ => tpe.dep), Some(g.value.manageDep(_ => tpe.dep))))
                 )
               yield v
-            case Term.ValueLevel.Lam.Lam1(_, _, _, _) => StateT.liftF[ErrorF, List[Statement], ValueExpr[VectorN[A] => VectorN[A], (Int, Z)]](Left(List(Error(s"${sp.file}:${sp.line}\nAppend error"))))
-            case Term.ValueLevel.Lam.Lam2(_, _, _, _, _) => StateT.liftF[ErrorF, List[Statement], ValueExpr[VectorN[A] => VectorN[A], (Int, Z)]](Left(List(Error(s"${sp.file}:${sp.line}\nAppend error"))))
-            case Term.ValueLevel.Var.BooleanLiteral(_, _, _) => StateT.liftF[ErrorF, List[Statement], ValueExpr[VectorN[A] => VectorN[A], (Int, Z)]](Left(List(Error(s"${sp.file}:${sp.line}\nAppend error"))))
-            case Term.ValueLevel.Var.IntLiteral(_, _, _) => StateT.liftF[ErrorF, List[Statement], ValueExpr[VectorN[A] => VectorN[A], (Int, Z)]](Left(List(Error(s"${sp.file}:${sp.line}\nAppend error"))))
-            case Term.ValueLevel.Var.StringLiteral(_, _, _) => StateT.liftF[ErrorF, List[Statement], ValueExpr[VectorN[A] => VectorN[A], (Int, Z)]](Left(List(Error(s"${sp.file}:${sp.line}\nAppend error"))))
-            case Term.ValueLevel.Var.ListCtor(_, _) => StateT.liftF[ErrorF, List[Statement], ValueExpr[VectorN[A] => VectorN[A], (Int, Z)]](Left(List(Error(s"${sp.file}:${sp.line}\nAppend error"))))
-            case Term.ValueLevel.Var.OptionCtor(_, _) => StateT.liftF[ErrorF, List[Statement], ValueExpr[VectorN[A] => VectorN[A], (Int, Z)]](Left(List(Error(s"${sp.file}:${sp.line}\nAppend error"))))
-            case Term.ValueLevel.Var.SomeCtor(_, _) => StateT.liftF[ErrorF, List[Statement], ValueExpr[VectorN[A] => VectorN[A], (Int, Z)]](Left(List(Error(s"${sp.file}:${sp.line}\nAppend error"))))
+            case _ => StateT.liftF[ErrorF, List[Statement], ValueExpr[VectorN[A] => VectorN[A], (Int, Z)]](Left(List(Error(s"${sp.file}:${sp.line}\nAppend error"))))
         yield ValueExpr(Term.ValueLevel.App.Dotless(None, f.value, o.value, v.value, o.value.tpe.manageDep(d => (d._1 + v.value.tpe.dep._1, d._2))))

@@ -6,8 +6,9 @@ package dc10.scalaq
     def manageDep[ZZ](f: Z => ZZ): Term.TypeLevel[T, ZZ] =
       t match
         case Term.TypeLevel.App.App1(qnt, tfun, targ, dep) =>  Term.TypeLevel.App.App1(qnt, tfun, targ, f(dep)) 
-        case Term.TypeLevel.App.App2(qnt, tfun, ta, tb, dep) => Term.TypeLevel.App.App2(qnt, tfun.manageDep(f), ta.manageDep(f), tb.manageDep(f), f(dep))
+        case Term.TypeLevel.App.App2(qnt, tfun, ta, tb, dep) => Term.TypeLevel.App.App2(qnt, tfun, ta, tb, f(dep))
         case Term.TypeLevel.App.App3(qnt, tfun, ta1, ta2, tb, dep) => Term.TypeLevel.App.App3(qnt, tfun.manageDep(f), ta1.manageDep(f), ta2.manageDep(f), tb.manageDep(f), f(dep))
+        case Term.TypeLevel.App.Infix(qnt, tfun, ta, tb, dep) => Term.TypeLevel.App.Infix(qnt, tfun, ta, tb, f(dep))
         case Term.TypeLevel.Lam.Function1Type(qnt, dep) => Term.TypeLevel.Lam.Function1Type(qnt, f(dep)).asInstanceOf[Term.TypeLevel[T, ZZ]]
         case Term.TypeLevel.Lam.Function2Type(qnt, dep) => Term.TypeLevel.Lam.Function2Type(qnt, f(dep)).asInstanceOf[Term.TypeLevel[T, ZZ]]
         case Term.TypeLevel.Var.BooleanType(qnt, dep) => Term.TypeLevel.Var.BooleanType(qnt, f(dep))
@@ -23,11 +24,12 @@ package dc10.scalaq
       v match
         case Term.ValueLevel.App.App1(qnt, fun, arg, tpe) => Term.ValueLevel.App.App1(qnt, fun.manageDep(f), arg.manageDep(f), tpe.manageDep(f))
         case Term.ValueLevel.App.AppCtor1(qnt, tpe, arg) => Term.ValueLevel.App.AppCtor1(qnt, tpe.manageDep(f), arg.manageDep(f))
+        case Term.ValueLevel.App.AppCtor2(qnt, tpe, arg1, arg2) => Term.ValueLevel.App.AppCtor2(qnt, tpe.manageDep(f), arg1.manageDep(f), arg2.manageDep(f))
         case Term.ValueLevel.App.AppPure(qnt, fun, arg, tpe) => Term.ValueLevel.App.AppPure(qnt, fun, arg, tpe.manageDep(f))
         case Term.ValueLevel.App.AppVargs(qnt, fun, tpe, vargs*) => ???
         case Term.ValueLevel.App.Dot1(qnt, fun, arg1, arg2, tpe) => Term.ValueLevel.App.Dot1(qnt, fun.manageDep(f), arg1.manageDep(f), arg2.manageDep(f), tpe.manageDep(f))
         case Term.ValueLevel.App.Dotless(qnt, fun, arg1, arg2, tpe) => Term.ValueLevel.App.Dotless(qnt, fun.manageDep(f), arg1.manageDep(f), arg2.manageDep(f), tpe.manageDep(f))
-        case Term.ValueLevel.Lam.Lam1(qnt, a, b, tpe) => ???
+        case Term.ValueLevel.Lam.Lam1(qnt, a, b, tpe) => Term.ValueLevel.Lam.Lam1(qnt, a, b, tpe.manageDep(f))
         case Term.ValueLevel.Lam.Lam2(qnt, a1, a2, b, tpe) => ???
         case Term.ValueLevel.Var.BooleanLiteral(qnt, tpe, b) => Term.ValueLevel.Var.BooleanLiteral(qnt, tpe.manageDep(f), b)
         case Term.ValueLevel.Var.IntLiteral(qnt, tpe, i) => Term.ValueLevel.Var.IntLiteral(qnt, tpe.manageDep(f), i)
@@ -41,6 +43,7 @@ package dc10.scalaq
       v match
         case Term.ValueLevel.App.App1(qnt, fun, arg, tpe) => Some(v)
         case Term.ValueLevel.App.AppCtor1(qnt, tpe, arg) => Some(v)
+        case Term.ValueLevel.App.AppCtor2(qnt, tpe, arg1, arg2) => Some(v)
         case Term.ValueLevel.App.AppPure(qnt, fun, arg, tpe) => Some(v)
         case Term.ValueLevel.App.AppVargs(qnt, fun, tpe, vargs*) => Some(v)
         case Term.ValueLevel.App.Dot1(qnt, fun, arg1, arg2, tpe) => Some(v)
@@ -59,6 +62,7 @@ package dc10.scalaq
       v.findImpl.fold(None)(i => i match
         case Term.ValueLevel.App.App1(qnt, fun, arg, tpe) => None 
         case Term.ValueLevel.App.AppCtor1(qnt, tpe, arg) => None
+        case Term.ValueLevel.App.AppCtor2(qnt, tpe, arg1, arg2) => None
         case Term.ValueLevel.App.AppPure(qnt, fun, arg, tpe) => None
         case Term.ValueLevel.App.AppVargs(qnt, fun, tpe, vargs*) => Some(vargs.asInstanceOf[Seq[Term.ValueLevel[U, A]]])
         case Term.ValueLevel.App.Dot1(qnt, fun, arg1, arg2, tpe) => None
