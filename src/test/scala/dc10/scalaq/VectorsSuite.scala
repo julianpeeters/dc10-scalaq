@@ -1,3 +1,4 @@
+package dc10.scalaq
 
 import _root_.scala.language.implicitConversions
 import cats.implicits.given
