@@ -20,7 +20,7 @@ val snippet =
     l <- VAL("l", VECTOR(3, INT), Vector.of(1, 2, 3))
     _ <- VAL("m", VECTOR(6, INT), l ++ l)
   yield ()
-// snippet: IndexedStateT[ErrorF, List[Statement], List[Statement], Unit] = cats.data.IndexedStateT@1fa6cf9
+// snippet: IndexedStateT[ErrorF, List[Statement], List[Statement], Unit] = cats.data.IndexedStateT@29625966
 ```
 
 Use the `compiler` to typecheck, then render code as `List`:
