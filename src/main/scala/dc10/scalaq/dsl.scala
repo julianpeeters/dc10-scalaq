@@ -18,3 +18,5 @@ object dsl extends dsl
   with Files.Mixins
   // Dependent Vectors
   with Vectors.Mixins
+  // Natural Numbers
+  with Nats.Mixins

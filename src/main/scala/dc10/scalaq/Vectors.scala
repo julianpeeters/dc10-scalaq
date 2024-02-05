@@ -50,7 +50,6 @@ object Vectors:
           l <- ctor
           a <- args.toList.sequence
           h <- StateT.liftF[ErrorF, List[Statement], ValueExpr[A, Z]](a.headOption.toRight(List(Error(s""))))
-          t <- VECTOR.apply(a.length, StateT.pure(TypeExpr(h.value.tpe)))
           v <- StateT.liftF[ErrorF, List[Statement], Term.ValueLevel[VectorN[A], (Int, Z)]](
             if (a.forall(e => e.value.tpe.dep == h.value.tpe.dep))
             then Right(Term.ValueLevel.App.AppVargs[VectorN, A, Int, Z](
