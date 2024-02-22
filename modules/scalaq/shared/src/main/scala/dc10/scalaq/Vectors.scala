@@ -93,18 +93,14 @@ object Vectors:
             then Right(
               Term.ValueLevel.App.AppVargs[VectorN, A, Int, Z](
                 None,
-                // l.value.manageDep(_ => Term.ValueLevel.Var.IntLiteral(None, Term.TypeLevel.Var.IntType(None, Term.ValueLevel.Var.UnitLiteral(None, Term.TypeLevel.Var.UnitType(None), ())), a.length)),
                 l.value.manageDep(_ => Term.ValueLevel.Var.IntLiteral(None, Term.TypeLevel.Var.IntType(None, h.value.tpe.dep.tpe.dep), a.length)),
                 l.value.tpe.manageDep(_ =>
                   Term.ValueLevel.App.AppCtor2(None, "",
-                  //  None,
-                    // ???,
                       Term.TypeLevel.App.App2(
                         None,
                         Term.TypeLevel.Var.TupleType(None, Term.ValueLevel.Var.UnitLiteral(None, Term.TypeLevel.Var.UnitType(None), ())),
                         Term.TypeLevel.Var.IntType(None, h.value.tpe.dep.tpe.dep),
                         h.value.tpe.dep.tpe,
-                        // Term.ValueLevel.Var.UnitLiteral(None, Term.TypeLevel.Var.UnitType(None), ())
                         h.value.tpe.dep.tpe.dep
                     ),
                     Term.ValueLevel.Var.IntLiteral(None, Term.TypeLevel.Var.IntType(None, h.value.tpe.dep.tpe.dep), a.length),
@@ -137,17 +133,10 @@ object Vectors:
             case _ => StateT.liftF[ErrorF, List[Statement], ValueExpr[VectorN[A] => VectorN[A], (Int, Z)]](Left(List(Error(s"${sp.file}:${sp.line}\nAppend error"))))
         yield ValueExpr(Term.ValueLevel.App.Dotless(None, f.value, o.value, v.value, o.value.tpe.manageDep(d =>
 
-          // (
-          //   d._1 + v.value.tpe.dep._1,
-          //   d._2
-          // )
           (d, v.value.tpe.dep) match
             case (App1(qnt, fun, arg, tpe), _) => ???
             case (AppCtor1(qnt, tpe, arg), _) => ???
             case (AppCtor2(qntA, nmeA, tpeA, arg1A, arg2A), AppCtor2(qntB, nmeB, tpeB, arg1B, arg2B)) => AppCtor2(qntA, nmeA, tpeA,
-              // arg1,
-              // arg2
-
               (arg1A, arg1B) match
                 case (App1(qnt, fun, arg, tpe), _) => ???
                 case (AppCtor1(qnt, tpe, arg), _) => ???
@@ -174,21 +163,12 @@ object Vectors:
             )
             case (AppCtor2(qntA, nmeA, tpeA, arg1A, arg2A), _) => ???
             case (AppPure(qnt, fun, arg, tpe), _) => ???
-            // case AppVargs(qnt, fun, tpe, vargs*) => ???
             case (Dot1(qnt, fun, arg1, arg2, tpe), _) => ???
             case (Dotless(qnt, fun, arg1, arg2, tpe), _) => ???
             case (ForComp(qnt, gens, ret, tpe), _) => ???
-            // case Lam1(qnt, a, b, tpe) => ???
-            // case Lam2(qnt, a1, a2, c, tpe) => ???
-            // case BooleanLiteral(qnt, tpe, b) => ???
-            // case IntLiteral(qnt, tpe, i) => ???
-            // case StringLiteral(qnt, tpe, s) => ???
-            // case UnitLiteral(qnt, tpe, u) => ???
             case (ListCtor(qnt, tpe), _) => ???
             case (OptionCtor(qnt, tpe), _) => ???
             case (SomeCtor(qnt, tpe), _) => ???
             case (TupleCtor(qnt, tpe), _) => ???
             case (UserDefinedValue(qnt, nme, tpe, impl), _) => ???
-          
-
         )))

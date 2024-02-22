@@ -3,8 +3,8 @@ package dc10.scalaq.numbers
 import cats.data.StateT
 import cats.implicits.given
 // import dc10.scala.dsl.{==>}
-// import dc10.scala.{Error, ErrorF, Statement}
-import dc10.scala.{ErrorF, Statement}
+import dc10.scala.{Error, ErrorF, Statement}
+// import dc10.scala.{ErrorF, Statement}
 import dc10.scala.Statement.{TypeExpr, ValueExpr}
 import dc10.scala.Symbol.Term
 import org.tpolecat.sourcepos.SourcePos
@@ -40,24 +40,24 @@ trait Nats[F[_]]:
   def Succ: F[ValueExpr[Nat, Unit]]
   def EVEN: F[TypeExpr[Even, Unit]]
   def Even: F[ValueExpr[Even, Unit]]
-  // extension (tfunction: F[TypeExpr[Even, Unit]])
-  //   @scala.annotation.targetName("appTEven")
-  //   def apply(nat: F[ValueExpr[Nat, Unit]])(using sp: SourcePos): F[TypeExpr[Even, ValueExpr[Nat, Unit]]]
+  extension [Z] (tfunction: F[TypeExpr[Even, Z]])
+    @scala.annotation.targetName("appTEven")
+    def apply(nat: F[ValueExpr[Nat, Unit]])(using sp: SourcePos): F[TypeExpr[Even, Nat]]
   // extension (ctor: F[ValueExpr[Even, Unit]])
   //   @scala.annotation.targetName("appVEven")
   //   def of(args: F[ValueExpr[Nat, Unit]])(using sp: SourcePos): F[ValueExpr[Even, ValueExpr[Nat, Unit]]]
 
   def ODD: F[TypeExpr[Odd, Unit]]
   def Odd: F[ValueExpr[Odd, Unit]]
-  // extension (ctor: F[TypeExpr[Odd, Unit]])
-  //   @scala.annotation.targetName("appTOdd")
-  //   def apply(args: F[ValueExpr[Nat, Unit]])(using sp: SourcePos): F[TypeExpr[Odd, ValueExpr[Nat, Unit]]]
+  extension [Z] (ctor: F[TypeExpr[Odd, Z]])
+    @scala.annotation.targetName("appTOdd")
+    def apply(args: F[ValueExpr[Nat, Unit]])(using sp: SourcePos): F[TypeExpr[Odd, Nat]]
 
   def EVEN2: F[TypeExpr[Even2, Unit]]
   def Even2: F[ValueExpr[Even2, Unit]]
-  // extension (tfunction: F[TypeExpr[Even2, Unit]])
-  //   @scala.annotation.targetName("appTEven2")
-  //   def apply(nat: F[ValueExpr[Nat, Unit]])(using sp: SourcePos): F[TypeExpr[Even2, ValueExpr[Nat, Unit]]]
+  extension [Z] (tfunction: F[TypeExpr[Even2, Z]])
+    @scala.annotation.targetName("appTEven2")
+    def apply(nat: F[ValueExpr[Nat, Unit]])(using sp: SourcePos): F[TypeExpr[Even2, Nat]]
   // extension (ctor: F[ValueExpr[Even2, Unit]])
   //   @scala.annotation.targetName("appVEven2")
   //   def of(args: F[ValueExpr[Nat, Unit]])(using sp: SourcePos): F[ValueExpr[Even2, ValueExpr[Nat, Unit]]]
@@ -131,35 +131,36 @@ object Nats:
         v <- StateT.pure(ValueExpr(Term.ValueLevel.Var.UserDefinedValue(None, "Even", t.tpe, None)))
       yield v
 
-    // extension (tfunction: StateT[ErrorF, List[Statement], TypeExpr[Even, Unit]])
-    //   @scala.annotation.targetName("appTEven")
-    //   def apply(targs: StateT[ErrorF, List[Statement], ValueExpr[Nat, Unit]])(using sp: SourcePos): StateT[ErrorF, List[Statement], TypeExpr[Even, ValueExpr[Nat, Unit]]] =
-    //     for
-    //       f <- tfunction
-    //       a <- targs
-    //       _ <- StateT.liftF[ErrorF, List[Statement], ValueExpr[Nat, Unit]](a.value match
-    //         case dc10.scala.Symbol.Term.ValueLevel.App.App1(qnt, fun, arg, tpe) =>  ???
-    //         case AppCtor1(qnt, tpe, arg) => if !(isEven(arg.asInstanceOf[ValueLevel[Nat, Unit]])%(2) == 1) then Right(a) else Left(List(Error(s"${sp.file}:${sp.line}\nDependent Nat error")))
-    //         case AppCtor2(qnt, nme, tpe, arg1, arg2) => ???
-    //         case AppPure(qnt, fun, arg, tpe) => ???
-    //         case ValueLevel.Blc.ForComp(qnt, gens, tpe, z) => ???
-    //         case Dot1(qnt, fun, arg1, arg2, tpe) => ???
-    //         case Dotless(qnt, fun, arg1, arg2, tpe) => ???
-    //         case Lam1(qnt, a, b, tpe) => ???
-    //         case Lam2(qnt, a1, a2, c, tpe) => ???
-    //         case BooleanLiteral(qnt, tpe, b) => ???
-    //         case IntLiteral(qnt, tpe, i) => ???
-    //         case StringLiteral(qnt, tpe, s) => ???
-    //         case UnitLiteral(qnt, tpe, s) => ???
-    //         case ListCtor(qnt, tpe) => ???
-    //         case OptionCtor(qnt, tpe) => ???
-    //         case SomeCtor(qnt, tpe) => ???
-    //         case UserDefinedValue(qnt, nme, tpe, impl) => impl.fold(Right(a))(i => if Nats.isEven(i)%(2) == 1 then Right(a) else Left(List(Error(s"${sp.file}:${sp.line}\nDependent Even nat value error"))))
-    //       )
+    extension [Z] (tfunction: StateT[ErrorF, List[Statement], TypeExpr[Even, Z]])
+      @scala.annotation.targetName("appTEven")
+      def apply(targs: StateT[ErrorF, List[Statement], ValueExpr[Nat, Unit]])(using sp: SourcePos): StateT[ErrorF, List[Statement], TypeExpr[Even, Nat]] =
+        for
+          f <- tfunction
+          a <- targs
+          _ <- StateT.liftF[ErrorF, List[Statement], ValueExpr[Nat, Unit]](a.value match
+            case dc10.scala.Symbol.Term.ValueLevel.App.App1(qnt, fun, arg, tpe) =>  ???
+            case AppCtor1(qnt, tpe, arg) => if !(isEven(arg.asInstanceOf[ValueLevel[Nat, Unit]])%(2) == 1) then Right(a) else Left(List(Error(s"${sp.file}:${sp.line}\nDependent Nat error")))
+            case AppCtor2(qnt, nme, tpe, arg1, arg2) => ???
+            case AppPure(qnt, fun, arg, tpe) => ???
+            case ValueLevel.Blc.ForComp(qnt, gens, tpe, z) => ???
+            case Dot1(qnt, fun, arg1, arg2, tpe) => ???
+            case Dotless(qnt, fun, arg1, arg2, tpe) => ???
+            case Lam1(qnt, a, b, tpe) => ???
+            case Lam2(qnt, a1, a2, c, tpe) => ???
+            case BooleanLiteral(qnt, tpe, b) => ???
+            case IntLiteral(qnt, tpe, i) => ???
+            case StringLiteral(qnt, tpe, s) => ???
+            case UnitLiteral(qnt, tpe, s) => ???
+            case ListCtor(qnt, tpe) => ???
+            case OptionCtor(qnt, tpe) => ???
+            case SomeCtor(qnt, tpe) => ???
+            case TupleCtor(qnt, tpe) => ???
+            case UserDefinedValue(qnt, nme, tpe, impl) => impl.fold(Right(a))(i => if Nats.isEven(i)%(2) == 1 then Right(a) else Left(List(Error(s"${sp.file}:${sp.line}\nDependent Even nat value error"))))
+          )
 
-    //     yield f.copy(tpe = f.tpe.manageDep(_ => a)
+        yield f.copy(tpe = f.tpe.manageDep(_ => a.value.asInstanceOf[ValueLevel[Nat, Any]])
 
-    //     )
+        )
         
     // extension (ctor: StateT[ErrorF, List[Statement], ValueExpr[Even, Unit]])
     //   @scala.annotation.targetName("appVEven")
@@ -178,38 +179,39 @@ object Nats:
         v <- StateT.pure(ValueExpr(Term.ValueLevel.Var.UserDefinedValue(None, "Odd", t.tpe, None)))
       yield v
 
-    // extension (tfunction: StateT[ErrorF, List[Statement], TypeExpr[Odd, Unit]])
-    //   @scala.annotation.targetName("appTOdd")
-    //   def apply(targs: StateT[ErrorF, List[Statement], ValueExpr[Nat, Unit]])(using sp: SourcePos): StateT[ErrorF, List[Statement], TypeExpr[Odd, ValueExpr[Nat, Unit]]] =
-    //     for
-    //       f <- tfunction
-    //       a <- targs
+    extension [Z] (tfunction: StateT[ErrorF, List[Statement], TypeExpr[Odd, Z]])
+      @scala.annotation.targetName("appTOdd")
+      def apply(targs: StateT[ErrorF, List[Statement], ValueExpr[Nat, Unit]])(using sp: SourcePos): StateT[ErrorF, List[Statement], TypeExpr[Odd, Nat]] =
+        for
+          f <- tfunction
+          a <- targs
     
-    //       _ <- StateT.liftF[ErrorF, List[Statement], ValueExpr[Nat, Unit]](a.value match
-    //         case dc10.scala.Symbol.Term.ValueLevel.App.App1(qnt, fun, arg, tpe) =>  ???
-    //         case AppCtor1(qnt, tpe, arg) =>
-    //           if !(isEven(arg.asInstanceOf[ValueLevel[Nat, Unit]])%(2) == 0) then Right(a) else Left(List(Error(s"${sp.file}:${sp.line}\nDependent Nat apply error")))
-    //         case AppCtor2(qnt, nme, tpe, arg1, arg2) => ???
-    //         case AppPure(qnt, fun, arg, tpe) => ???
-    //         case ValueLevel.Blc.ForComp(qnt, gens, tpe, z) => ???
-    //         case Dot1(qnt, fun, arg1, arg2, tpe) => ???
-    //         case Dotless(qnt, fun, arg1, arg2, tpe) => ???
-    //         case Lam1(qnt, a, b, tpe) => ???
-    //         case Lam2(qnt, a1, a2, c, tpe) => ???
-    //         case BooleanLiteral(qnt, tpe, b) => ???
-    //         case IntLiteral(qnt, tpe, i) => ???
-    //         case StringLiteral(qnt, tpe, s) => ???
-    //         case UnitLiteral(qnt, tpe, u) => ???
-    //         case ListCtor(qnt, tpe) => ???
-    //         case OptionCtor(qnt, tpe) => ???
-    //         case SomeCtor(qnt, tpe) => ???
-    //         case UserDefinedValue(qnt, nme, tpe, impl) =>
-    //           if isEven(a.value)%(2) == 0 then Right(a) else Left(List(Error(s"${sp.file}:${sp.line}\nDependent Nat value error")))
-    //       )
+          _ <- StateT.liftF[ErrorF, List[Statement], ValueExpr[Nat, Unit]](a.value match
+            case dc10.scala.Symbol.Term.ValueLevel.App.App1(qnt, fun, arg, tpe) =>  ???
+            case AppCtor1(qnt, tpe, arg) =>
+              if !(isEven(arg.asInstanceOf[ValueLevel[Nat, Unit]])%(2) == 0) then Right(a) else Left(List(Error(s"${sp.file}:${sp.line}\nDependent Nat apply error")))
+            case AppCtor2(qnt, nme, tpe, arg1, arg2) => ???
+            case AppPure(qnt, fun, arg, tpe) => ???
+            case ValueLevel.Blc.ForComp(qnt, gens, tpe, z) => ???
+            case Dot1(qnt, fun, arg1, arg2, tpe) => ???
+            case Dotless(qnt, fun, arg1, arg2, tpe) => ???
+            case Lam1(qnt, a, b, tpe) => ???
+            case Lam2(qnt, a1, a2, c, tpe) => ???
+            case BooleanLiteral(qnt, tpe, b) => ???
+            case IntLiteral(qnt, tpe, i) => ???
+            case StringLiteral(qnt, tpe, s) => ???
+            case UnitLiteral(qnt, tpe, u) => ???
+            case ListCtor(qnt, tpe) => ???
+            case OptionCtor(qnt, tpe) => ???
+            case SomeCtor(qnt, tpe) => ???
+            case TupleCtor(qnt, tpe) => ???
+            case UserDefinedValue(qnt, nme, tpe, impl) =>
+              if isEven(a.value)%(2) == 0 then Right(a) else Left(List(Error(s"${sp.file}:${sp.line}\nDependent Nat value error")))
+          )
           
-    //     yield f.copy(tpe = f.tpe.manageDep(_ => a)
+        yield f.copy(tpe = f.tpe.manageDep(_ => a.value.asInstanceOf[ValueLevel[Nat, Any]])
 
-    //     )
+        )
 
 
     def EVEN2: StateT[ErrorF, List[Statement], TypeExpr[Even2, Unit]] =
@@ -221,36 +223,36 @@ object Nats:
         v <- StateT.pure(ValueExpr(Term.ValueLevel.Var.UserDefinedValue(None, "Even2", t.tpe, None)))
       yield v
 
-    // extension (tfunction: StateT[ErrorF, List[Statement], TypeExpr[Even2, Unit]])
-    //   @scala.annotation.targetName("appTEven2")
-    //   def apply(targs: StateT[ErrorF, List[Statement], ValueExpr[Nat, Unit]])(using sp: SourcePos): StateT[ErrorF, List[Statement], TypeExpr[Even2, ValueExpr[Nat, Unit]]] =
-    //     for
-    //       f <- tfunction
-    //       a <- targs
-    //       _ <- StateT.liftF[ErrorF, List[Statement], ValueExpr[Nat, Unit]](a.value match
-    //         case dc10.scala.Symbol.Term.ValueLevel.App.App1(qnt, fun, arg, tpe) =>  ???
-    //         case AppCtor1(qnt, tpe, arg) => if !(Nats.isEven(arg.asInstanceOf[ValueLevel[Nat, Unit]])%(2) == 1) then Right(a) else Left(List(Error(s"${sp.file}:${sp.line}\nDependent Nat error")))
-    //         case AppCtor2(qnt, nme, tpe, arg1, arg2) => ???
-    //         case AppPure(qnt, fun, arg, tpe) => ???
-    //         case ValueLevel.Blc.ForComp(qnt, gens, tpe, z) => ???
-    //         case Dot1(qnt, fun, arg1, arg2, tpe) => ???
-    //         case Dotless(qnt, fun, arg1, arg2, tpe) => ???
-    //         case Lam1(qnt, a, b, tpe) => ???
-    //         case Lam2(qnt, a1, a2, c, tpe) => ???
-    //         case BooleanLiteral(qnt, tpe, b) => ???
-    //         case IntLiteral(qnt, tpe, i) => ???
-    //         case StringLiteral(qnt, tpe, s) => ???
-    //         case UnitLiteral(qnt, tpe, u) => ???
-    //         case ListCtor(qnt, tpe) => ???
-    //         case OptionCtor(qnt, tpe) => ???
-    //         case SomeCtor(qnt, tpe) => ???
+    extension [Z] (tfunction: StateT[ErrorF, List[Statement], TypeExpr[Even2, Z]])
+      @scala.annotation.targetName("appTEven2")
+      def apply(targs: StateT[ErrorF, List[Statement], ValueExpr[Nat, Unit]])(using sp: SourcePos): StateT[ErrorF, List[Statement], TypeExpr[Even2, Nat]] =
+        for
+          f <- tfunction
+          a <- targs
+          _ <- StateT.liftF[ErrorF, List[Statement], ValueExpr[Nat, Unit]](a.value match
+            case dc10.scala.Symbol.Term.ValueLevel.App.App1(qnt, fun, arg, tpe) =>  ???
+            case AppCtor1(qnt, tpe, arg) => if !(Nats.isEven(arg.asInstanceOf[ValueLevel[Nat, Unit]])%(2) == 1) then Right(a) else Left(List(Error(s"${sp.file}:${sp.line}\nDependent Nat error")))
+            case AppCtor2(qnt, nme, tpe, arg1, arg2) => ???
+            case AppPure(qnt, fun, arg, tpe) => ???
+            case ValueLevel.Blc.ForComp(qnt, gens, tpe, z) => ???
+            case Dot1(qnt, fun, arg1, arg2, tpe) => ???
+            case Dotless(qnt, fun, arg1, arg2, tpe) => ???
+            case Lam1(qnt, a, b, tpe) => ???
+            case Lam2(qnt, a1, a2, c, tpe) => ???
+            case BooleanLiteral(qnt, tpe, b) => ???
+            case IntLiteral(qnt, tpe, i) => ???
+            case StringLiteral(qnt, tpe, s) => ???
+            case UnitLiteral(qnt, tpe, u) => ???
+            case ListCtor(qnt, tpe) => ???
+            case OptionCtor(qnt, tpe) => ???
+            case SomeCtor(qnt, tpe) => ???
+            case TupleCtor(qnt, tpe) => ???
+            case UserDefinedValue(qnt, nme, tpe, impl) =>
+              impl.fold(Right(a))(i => if Nats.isEven(i)%(2) == 1 then Right(a) else Left(List(Error(s"${sp.file}:${sp.line}\nDependent Nat value error"))))
+          )
+        yield f.copy(tpe = f.tpe.manageDep(_ => a.value.asInstanceOf[ValueLevel[Nat, Any]])
 
-    //         case UserDefinedValue(qnt, nme, tpe, impl) =>
-    //           impl.fold(Right(a))(i => if Nats.isEven(i)%(2) == 1 then Right(a) else Left(List(Error(s"${sp.file}:${sp.line}\nDependent Nat value error"))))
-    //       )
-    //     yield f.copy(tpe = f.tpe.manageDep(_ => a)
-
-    //     )
+        )
         
     // extension (ctor: StateT[ErrorF, List[Statement], ValueExpr[Even2, Unit]])
     //   @scala.annotation.targetName("appVEven2")

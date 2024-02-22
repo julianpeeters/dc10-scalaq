@@ -27,9 +27,9 @@ Use the `compiler` to typecheck, then render code as `List`:
 
 ```scala
 import dc10.scala.compiler.{compile, toString}
-import dc10.scala.version.`3.3.1`
+import dc10.scala.version.`3.4.0`
 
-val result: String = snippet.compile.toString["scala-3.3.1"]
+val result: String = snippet.compile.toString["scala-3.4.0"]
 // result: String = """val l: List[Int] = List(1, 2, 3)
 // val m: List[Int] = l ++ l"""
 ```

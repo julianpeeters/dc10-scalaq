@@ -1,7 +1,7 @@
 # dc10-scalaq
 
 Experimental extensions to the `dc10-scala` code generator.
- - Library for Scala @SCALA@ (JVM only)
+ - Library for Scala @SCALA@ (JS, JVM, and Native platforms)
  - Generates code for Scala @SCALA@
 
 ```scala
@@ -26,7 +26,7 @@ Use the `compiler` to typecheck, then render code as `List`:
 
 ```scala mdoc
 import dc10.scala.compiler.{compile, toString}
-import dc10.scala.version.`3.3.1`
+import dc10.scala.version.`3.4.0`
 
-val result: String = snippet.compile.toString["scala-3.3.1"]
+val result: String = snippet.compile.toString["scala-3.4.0"]
 ```
