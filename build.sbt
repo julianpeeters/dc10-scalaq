@@ -1,8 +1,7 @@
 val CatsV = "2.10.0"
-val Dc10ScalaV = "0.5.0"
+val Dc10ScalaV = "0.7.1"
 val MUnitV = "0.7.29"
 val SourcePosV = "1.1.0"
-val TwiddlesV = "0.7.0"
 
 inThisBuild(List(
   crossScalaVersions := Seq(scalaVersion.value),
@@ -26,30 +25,32 @@ inThisBuild(List(
     "-Wunused:all",
     "-Wvalue-discard"
   ),
-  scalaVersion := "3.4.0-RC1-bin-20231025-8046a8b-NIGHTLY",
+  scalaVersion := "3.4.0",
   versionScheme := Some("semver-spec"),
 ))
 
-lazy val scalaq = (project in file("."))
+lazy val scalaq = crossProject(JSPlatform, JVMPlatform, NativePlatform)
+  .in(file("modules/scalaq"))
   .settings(
     name := "dc10-scalaq",
     libraryDependencies ++= Seq(
       // main
-      "com.julianpeeters" %% "dc10-scala" % Dc10ScalaV,
+      "com.julianpeeters" %%% "dc10-scala" % Dc10ScalaV,
       // test
-      "org.scalameta"     %% "munit"      % MUnitV      % Test
+      "org.scalameta"     %% "munit"       % MUnitV      % Test
     )
   )
-
+  .jsSettings(test := {})
+  .nativeSettings(test := {})
 
 lazy val docs = project.in(file("docs/gitignored"))
   .settings(
-    mdocOut := scalaq.base,
+    mdocOut := file("."),
     mdocVariables := Map(
       "SCALA" -> crossScalaVersions.value.map(e => e.takeWhile(_ != '.')).mkString(", "),
       "VERSION" -> version.value.takeWhile(_ != '+'),
     )
   )
-  .dependsOn(scalaq)
+  .dependsOn(scalaq.jvm)
   .enablePlugins(MdocPlugin)
   .enablePlugins(NoPublishPlugin)

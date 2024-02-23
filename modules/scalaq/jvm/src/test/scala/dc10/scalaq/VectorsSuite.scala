@@ -1,8 +1,9 @@
+package dc10.scalaq
 
 import _root_.scala.language.implicitConversions
 import cats.implicits.given
 import dc10.scala.compiler.{compile, toString}
-import dc10.scala.version.`3.3.1`
+import dc10.scala.version.`3.4.0`
 import dc10.scalaq.dsl.{*, given}
 import munit.FunSuite
 
@@ -19,7 +20,7 @@ class VectorsSuite extends FunSuite:
       yield ()
     
     val obtained: String =
-      ast.compile.toString["scala-3.3.1"]
+      ast.compile.toString["scala-3.4.0"]
       
     val expected: String =
       """|val l1: List[Int]
@@ -41,7 +42,7 @@ class VectorsSuite extends FunSuite:
       yield ()
     
     val obtained: String =
-      ast.compile.toString["scala-3.3.1"]
+      ast.compile.toString["scala-3.4.0"]
       
     val expected: String =
       """|val l1: List[Int] = List(1, 2, 3)
