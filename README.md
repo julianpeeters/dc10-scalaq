@@ -5,7 +5,7 @@ Experimental extensions and alternative DSL to the `dc10-scala` code generator.
  - Generates code for Scala 3
 
 ```scala
-"com.julianpeeters" %% "dc10-scalaq" % "0.5.0"
+"com.julianpeeters" %% "dc10-scalaq" % "0.6.0"
 ```
 
 ## Dependent Vector Types
@@ -19,7 +19,7 @@ val snippet =
     l <- VAL("l", VECTOR(3, INT), Vector.of(1, 2, 3))
     _ <- VAL("m", VECTOR(6, INT), l ++ l)
   yield ()
-// snippet: IndexedStateT[ErrorF, List[Statement], List[Statement], Unit] = cats.data.IndexedStateT@5a72258b
+// snippet: IndexedStateT[ErrorF, List[Statement], List[Statement], Unit] = cats.data.IndexedStateT@73036f97
 ```
 
 Use the `compiler` to typecheck, then render code as `List`:
@@ -42,7 +42,7 @@ import scala.language.implicitConversions // for reference to x
 val snippet =
   VAL("f", STRING ==@ TUPLE(STRING, STRING),
     VAL("x", STRING) ==@ (x => Tuple(x, x)))
-// snippet: IndexedStateT[ErrorF, List[Statement], List[Statement], ValueExpr[Function1[String, Tuple2[String, String]], Tuple2[Unit, Tuple2[Unit, Unit]]]] = cats.data.IndexedStateT@1f91be92
+// snippet: IndexedStateT[ErrorF, List[Statement], List[Statement], ValueExpr[Function1[String, Tuple2[String, String]], Tuple2[Unit, Tuple2[Unit, Unit]]]] = cats.data.IndexedStateT@6167066a
 ```
 
 Use the `compiler` to typecheck, then render code as `Function`:
