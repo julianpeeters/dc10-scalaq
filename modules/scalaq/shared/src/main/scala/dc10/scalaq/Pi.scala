@@ -5,8 +5,6 @@ import dc10.scala.Symbol.Term
 import dc10.scala.{ErrorF, Statement}
 import cats.data.StateT
 
-
-
 trait Pi[F[_]]:
 
   extension [A, B, X, Y, Z] (fa: F[ValueExpr[A, Y]])

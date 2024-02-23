@@ -1,5 +1,5 @@
 val CatsV = "2.10.0"
-val Dc10ScalaV = "0.7.0"
+val Dc10ScalaV = "0.7.1"
 val MUnitV = "0.7.29"
 val SourcePosV = "1.1.0"
 
